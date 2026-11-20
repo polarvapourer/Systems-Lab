@@ -1,7 +1,6 @@
 import {courses,levels,models,make,sample,bin} from './catalogue.js';
 import {cases} from './cases.js';
 import {esc,figure} from './diagrams.js';
-import {pythonPanel} from './python-panel.js';
 import {guidePage,guideLink,printGuide} from './study.js';
 import {guidanceCheckbox,guidanceEnabled,saveGuidance} from './guided.js';
 import {randomSource} from './generator.js';
@@ -20,7 +19,7 @@ const lessons=courses.map(c=>{
  });
  const x=cases.find(q=>q.week===c.week);
  fixed.unshift({id:'case-'+c.week,title:x.title,prompt:x.prompt,type:'selection',choices:x.choices,answers:x.answers.map(i=>x.choices[i]),hint:x.hint,mistake:x.mistake,rule:c.method,
- figure:{data:x.data},steps:x.marks,python:x.python,pythonNote:'Use the output to check the executable part. Compare your explanation with the worked reasoning.'});
+ figure:{data:x.data},steps:x.marks});
  return fixed;
 });
 function pageURL(week,mode){return './?week='+week+'#'+mode;}
@@ -41,7 +40,7 @@ function workspace(){
  (q.choices?'<div class="answerlabel">Select all that apply</div><div class="choices">'+q.choices.map((v,i)=>'<button class="choice" data-choice="'+i+'" aria-pressed="'+a.picks.includes(v)+'">'+esc(v)+'</button>').join('')+'</div>':'<label>Your answer<input class="set-input" id="answer" value="'+esc(a.input)+'" placeholder="Enter a decimal value"></label>')+
  '<div class="actions"><button class="primary" data-action="check">Check answer</button><button class="secondary" data-action="hint">Hint</button><button class="ghost" data-action="solution">'+(a.solution?'Hide':'Show')+' worked answer</button></div><div aria-live="polite">'+(a.message?'<p class="message">'+esc(a.message)+'</p>':'')+'</div>'+
  (a.hint?'<p class="message">'+esc(guided?q.rule:q.hint)+'</p>':'')+(a.solution?'<ol class="steps-list">'+q.steps.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ol><p><b>Common mistake.</b> '+esc(q.mistake)+'</p>':'')+
- pythonPanel(q.python,q.pythonNote)+(q.calcLink?'<a href="'+esc(q.calcLink)+'">Edit these inputs in the calculator</a>':'')+
+ (q.calcLink?'<a href="'+esc(q.calcLink)+'">Edit these inputs in the calculator</a>':'')+
  '<div class="actions"><button class="secondary" data-action="advance">'+(position()<bank().length-1?'Next exercise':currentWeek!==9?'Next topic':'View progress')+'</button></div></div></article><aside>'+fieldNotes(q)+library()+'</aside></div>';
 }
 function expModel(){
@@ -57,7 +56,7 @@ function explore(){
  const m=expModel(),v=expValues(m),q=make(m,v);
  return '<div class="workspace"><section class="panel"><div class="panelhead"><span class="kicker">Explore · Week '+currentWeek+'</span></div><div class="panelbody"><h2>Change the inputs</h2><div class="calc-form"><label>Experiment<select id="experiment">'+models.filter(x=>x.week===currentWeek).map(x=>'<option value="'+x.id+'" '+(x===m?'selected':'')+'>'+esc(x.title)+'</option>').join('')+'</select></label><div class="calc-grid">'+m.fields.map(f=>'<label>'+esc(f.label)+'<input type="number" data-param="'+f.key+'" value="'+v[f.key]+'" min="'+f.min+'" max="'+f.max+'" step="'+f.step+'"></label>').join('')+'</div></div>'+
  (m.fields.some(f=>f.key==='a'&&f.max===255&&f.min===0)?'<div class="bitstrip">'+[...bin(v.a)].map((x,i)=>'<button data-flip="'+(7-i)+'" aria-label="Toggle bit '+(7-i)+'" aria-pressed="'+(x==='1')+'">'+x+'</button>').join('')+'</div>':'')+
- figure(q.figure)+'<h3>'+esc(q.prompt)+'</h3><p class="message"><b>Result.</b> '+esc(Array.isArray(q.answer)?q.answer.join(', '):q.answer)+'</p><ol>'+q.steps.slice(1).map(s=>'<li>'+esc(s)+'</li>').join('')+'</ol>'+pythonPanel(q.python)+'<a href="'+esc(q.calcLink)+'">Try these inputs yourself</a></div></section><aside>'+fieldNotes({...q,rule:m.rule})+library()+'</aside></div>';
+ figure(q.figure)+'<h3>'+esc(q.prompt)+'</h3><p class="message"><b>Result.</b> '+esc(Array.isArray(q.answer)?q.answer.join(', '):q.answer)+'</p><ol>'+q.steps.slice(1).map(s=>'<li>'+esc(s)+'</li>').join('')+'</ol>'+'<a href="'+esc(q.calcLink)+'">Try these inputs yourself</a></div></section><aside>'+fieldNotes({...q,rule:m.rule})+library()+'</aside></div>';
 }
 function progress(){
  return '<section class="guidecard"><span class="smallcap">Saved in this browser</span><h2>Your workspace progress</h2><p>Each exercise counts once when you answer it correctly. Select a topic to practise it again.</p>'+courses.map((c,i)=>{const n=lessons[i].filter(q=>saved.completed[q.id]).length;return '<div class="prow"><a href="'+pageURL(c.week,'practice')+'">'+esc(c.name)+'</a><span>'+n+' / '+lessons[i].length+' solved</span></div><progress max="'+lessons[i].length+'" value="'+n+'">'+n+'</progress>';}).join('')+'<div class="actions"><a href="paper.html">Review a written paper</a><a href="quick.html#progress">Original first-check scores</a></div></section>';

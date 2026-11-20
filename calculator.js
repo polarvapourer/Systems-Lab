@@ -1,7 +1,6 @@
 import {courses,models,make,sample} from './catalogue.js';
 import {randomSource} from './generator.js';
 import {esc,figure} from './diagrams.js';
-import {pythonPanel} from './python-panel.js';
 import {evaluateExpression} from './expression.js';
 const root=document.querySelector('#calculator'),params=new URLSearchParams(location.search);
 let m=models.find(m=>m.id===params.get('model'));
@@ -29,7 +28,7 @@ function output(){
  const out=root.querySelector('#calcOutput');
  try{
    const q=run(),answer=Array.isArray(q.answer)?q.answer.join(', '):q.answer;
-   out.innerHTML=(q.figure?figure(q.figure):'')+'<p>'+esc(mode==='model'?q.prompt:'Give the unsigned value after applying the selected width to every intermediate result.')+'</p><label>Your predicted answer<input class="set-input" id="prediction" value="'+esc(proposed)+'" placeholder="'+(Array.isArray(q.answer)?'Comma-separated positions or None':'Decimal value')+'"></label><div class="actions"><button class="primary" data-check>Check my answer</button><button class="secondary" data-show>'+(show?'Hide steps':'Show result and steps')+'</button></div><p role="status">'+esc(status)+'</p>'+(show?'<h3>Result: '+esc(answer)+'</h3><ol class="steps-list">'+q.steps.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ol>':'')+pythonPanel(q.python);
+   out.innerHTML=(q.figure?figure(q.figure):'')+'<p>'+esc(mode==='model'?q.prompt:'Give the unsigned value after applying the selected width to every intermediate result.')+'</p><label>Your predicted answer<input class="set-input" id="prediction" value="'+esc(proposed)+'" placeholder="'+(Array.isArray(q.answer)?'Comma-separated positions or None':'Decimal value')+'"></label><div class="actions"><button class="primary" data-check>Check my answer</button><button class="secondary" data-show>'+(show?'Hide steps':'Show result and steps')+'</button></div><p role="status">'+esc(status)+'</p>'+(show?'<h3>Result: '+esc(answer)+'</h3><ol class="steps-list">'+q.steps.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ol>':'');
  }catch(e){out.innerHTML='<p class="message" role="alert">'+esc(e.message)+'</p>';}
 }
 function render(){

@@ -14,10 +14,10 @@ for(const m of models){
  const alt=make(m,next);
  const tasks=[m.prompt,'Show the intermediate representation or calculation that justifies your result.'];
  const alternative=alt.data.join(' · ')+'. '+m.prompt;
- add({id:m.id,week:m.week,topic:q.subject,title:q.title,data:q.data,tasks,marks:q.steps.slice(1),hints:[m.hint,m.rule],python:q.python,followPython:alt.python},m.mistake,alternative,alt.steps.slice(1).join(' '));
+ add({id:m.id,week:m.week,topic:q.subject,title:q.title,data:q.data,tasks,marks:q.steps.slice(1),hints:[m.hint,m.rule]},m.mistake,alternative,alt.steps.slice(1).join(' '));
 }
 for(const c of cases){
- add({...c,id:'case-'+c.week,topic:courses.find(t=>t.week===c.week).name,hints:[c.hint,courses.find(t=>t.week===c.week).method],pythonNote:'This script checks the numerical or executable part. Use the written criteria to assess the explanation.'},c.mistake,c.follow,c.followAnswer);
+ add({...c,id:'case-'+c.week,topic:courses.find(t=>t.week===c.week).name,hints:[c.hint,courses.find(t=>t.week===c.week).method]},c.mistake,c.follow,c.followAnswer);
 }
 export function modelDiagram(id,steps){
  const q=questions.find(q=>q.id===id);

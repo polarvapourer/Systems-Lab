@@ -20,12 +20,9 @@ nav a { display: inline-flex; align-items: center; text-decoration: none; }
 .set-key dt {font-weight:bold}.set-key dd {margin:0}
 #symbols {gap:.4rem;margin-bottom:1rem}
 #symbols button {font-size:1.1rem;min-width:2.3rem;min-height:2.3rem}
-#setForm p,.set-steps,.python-panel {line-height:1.55}
+#setForm p,.set-steps {line-height:1.55}
 #status:not(:empty){background:#edf4ed;padding:.75rem 1rem;border-left:3px solid var(--green);overflow-wrap:anywhere}
-.python-panel {margin:1rem 0;padding:.8rem 1rem;border:1px solid var(--rule);border-radius:8px}
-.python-panel summary {font-weight:650;color:var(--green);cursor:pointer}
-.python-panel pre {background:#f2f5ef;padding:.8rem;overflow:auto;line-height:1.5;font-size:.9rem}
-.python-panel li+li,.set-steps li+li {margin-top:.45rem}
+.set-steps li+li {margin-top:.45rem}
 .workspace > *{min-width:0}
 @media(max-width:600px){.top nav{column-gap:13px}}
 
