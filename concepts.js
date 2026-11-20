@@ -73,7 +73,6 @@ export const guides = [
       "Explain an OS’s role and why an OS usage comparison needs a defined population."
     ],
     "reading": [
-      "Week 1 revision notes, PDF pp. 3–7: devices, operating systems, architecture, integration and data centres; pp. 10–11: practice and answers.",
       "ECS404-1 slides, PDF pp. 39–64: devices and operating systems; pp. 74–96: architecture and servers; pp. 99–117: laptops, phones and integration.",
       "Week 1 course notes, printed pp. 11–18: kinds of computer; pp. 19–30: device-level architecture."
     ]
@@ -157,7 +156,6 @@ export const guides = [
       "Arrange the bytes of a word in increasing memory-address order."
     ],
     "reading": [
-      "Week 2 revision notes, PDF pp. 2–7: place value, binary arithmetic and logic; pp. 8–15: signed values and overflow; p. 16: endian order; pp. 18–19: practice and answers.",
       "ECS404-2_2026 slides, PDF pp. 4–30: bits and bases; pp. 34–60: arithmetic and bitwise logic; pp. 64–112: integer formats and two’s complement; pp. 114–130: byte order.",
       "Week 2 course notes, printed pp. 107–120: unsigned integers and bases; pp. 121–130: signed integers and negation."
     ]
@@ -281,7 +279,7 @@ export const guides = [
     "reading": [
       "ECS404-3-2026.pdf, PDF pp. 2–14 (number recap), 22–76 (execution, calls and heap), 77–107 (compilation, MIPS and CPU blocks).",
       "ECS404-3-2026.pdf, PDF pp. 108–135 (semiconductor background), 136–178 (switches and gates), 179–196 (adders).",
-      "ECS404-coursenotes-wk3.pdf, PDF pp. 9–17 (network design and arithmetic), 18–22 (latches and DRAM). Week 3 CPU revision notes, PDF pp. 4–10, 12–24 and 34–37."
+      "ECS404-coursenotes-wk3.pdf, PDF pp. 9–17 (network design and arithmetic), 18–22 (latches and DRAM)."
     ]
   },
   {
@@ -405,9 +403,9 @@ export const guides = [
       "Distinguish virtual addresses, physical frames and persistent storage."
     ],
     "reading": [
-      "ECS404-4_2026.pdf, PDF pp. 9–25 (hierarchy), 26–60 (SRAM), 61–75 (DRAM), 76–87 (flash). The supplied Week 4 revision guide identifies flash as the end of the recorded teaching.",
+      "ECS404-4_2026.pdf, PDF pp. 9–25 (hierarchy), 26–60 (SRAM), 61–75 (DRAM), 76–87 (flash).",
       "ECS404-4_2026.pdf, PDF pp. 88–101 (disk), 102–129 (cache and locality), 130–150 (virtual memory). These later slides extend the recorded teaching.",
-      "ECS404-coursenotes-wk4.pdf, PDF pp. 1–12 (storage), 13–15 (I/O supplement). Week 4 Memory revision notes, PDF pp. 4–9 (circuit traces), 10–16 (supporting material) and 17–20 (practice and answers)."
+      "ECS404-coursenotes-wk4.pdf, PDF pp. 1–12 (storage), 13–15 (I/O supplement)."
     ]
   },
   {
@@ -530,7 +528,7 @@ export const guides = [
     ],
     "reading": [
       "Week 5 slide deck (ECS404-5_2026), PDF pp. 2–15 (cache and virtual memory recap), 22–30 (hexadecimal), 31–59 (ASCII and Latin-1), 60–110 (Unicode and UTF-8), 111–148 (floating-point behaviour), 149–163 (IEEE 754).",
-      "Week 5 course notes, printed pp. 131–137 (floating point) and 138–144 (text). Week 5 revision notes, PDF pp. 2–13 (worked methods), p. 14 (source corrections) and pp. 15–16 (practice and answers)."
+      "Week 5 course notes, printed pp. 131–137 (floating point) and 138–144 (text)."
     ]
   },
   {
@@ -600,7 +598,7 @@ export const guides = [
       },
       {
         "title": "Exponential growth and computer generations · historical extension",
-        "text": "The final part of the longer slide deck uses Moore’s law to discuss the rise in economically practical component counts on integrated circuits. A constant doubling interval gives exponential growth. More transistors can support cache, more cores or larger circuits; the speed of one program does not follow a fixed doubling rule. The historical examples move from valve machines, transistors and integrated circuits to single-chip CPUs, personal computers, portable devices and clusters. Mainframes time-shared jobs, while clusters and multicore processors can exploit parallel work. This historical survey appears in the longer slide deck and is outside the shorter Week 6 revision guide.",
+        "text": "The final part of the longer slide deck uses Moore’s law to discuss the rise in economically practical component counts on integrated circuits. A constant doubling interval gives exponential growth. More transistors can support cache, more cores or larger circuits; the speed of one program does not follow a fixed doubling rule. The historical examples move from valve machines, transistors and integrated circuits to single-chip CPUs, personal computers, portable devices and clusters. Mainframes time-shared jobs, while clusters and multicore processors can exploit parallel work. The Week 6 lecture slides cover this history on PDF pages 149–202.",
         "example": "At one doubling every two years, ten years contains five doublings. A count starting at N reaches 2⁵N = 32N under that assumption."
       }
     ],
@@ -634,7 +632,6 @@ export const guides = [
       "For the longer slide deck, explain a context switch, bus timing, USB polling and a doubling calculation."
     ],
     "reading": [
-      "Week 6 revision notes (Virtualization and Floating-Point Arithmetic), PDF pp. 1–2 (VMs and paging) and pp. 2–5 (IEEE fields, worked conversion and special values).",
       "Week 6 longer slide deck (ECS404-6-2024-actual), PDF pp. 4–40 (floating point), 43–58 (virtualisation) and 59–86 (virtual memory). Additional sections: pp. 87–106 (interrupts and I/O), 107–133 (buses), 134–147 (USB) and 149–202 (Moore’s law and history).",
       "IEEE 754 companion slides (ECS404-6-2025-IEEE754), PDF pp. 9–18 (field layout, special exponents and byte order). Week 6 course notes, printed pp. 57–64 (communications) and pp. 76–80 (I/O)."
     ]
@@ -774,7 +771,7 @@ export const guides = [
     "reading": [
       "Week 8 slides, PDF pp. 8–54 for the ISA, compilation, simulator and registers; pp. 55–74 for ALU operations and memory.",
       "Week 8 slides, PDF pp. 75–98 for branches, loops and source layout; pp. 99–107 for machine formats.",
-      "Week 8 Basic MIPS Assembly revision notes, PDF pp. 2–7, 8–12 and 13–17. MIPS Green Sheet, PDF p. 1, gives instruction fields and conventions."
+      "MIPS Green Sheet, PDF p. 1, gives instruction fields and conventions."
     ]
   },
   {
@@ -903,7 +900,7 @@ export const guides = [
     "reading": [
       "Week 9 slides, PDF pp. 9–17 and 18–40 for virtual addresses, memory layout and the string/dump example; pp. 41–50 for addressing modes.",
       "Week 9 slides, PDF pp. 51–69 for a leaf function and pp. 70–93 for nested calls; pp. 94–120 for objects, arrays and references.",
-      "Week 9 Assembly Language 2 revision notes, PDF pp. 2–8, 9–13 and 14–16. MIPS Green Sheet, PDF pp. 1–2, for instruction encodings, registers and ASCII."
+      "MIPS Green Sheet, PDF pp. 1–2, for instruction encodings, registers and ASCII."
     ]
   }
 ];

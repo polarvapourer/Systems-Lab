@@ -1,14 +1,14 @@
 // Each model computes a result from editable inputs. The same inputs drive the
 // figure, written working and standalone Python check in every practice mode.
 export const courses = [
-  [1,'Computer architecture','Trace data between the processor, memory and peripherals.','Week 1 revision notes, pp. 3–6 (components and the stored-program model), 10–11 (practice).'],
-  [2,'Integer representation','Label the width and signedness before interpreting bits.','Week 2 revision notes, pp. 2–7 (binary, hex and bit operations), 8–15 (signed integers and overflow), 16 (byte order).'],
-  [3,'CPU and logic','Work one bit position at a time. Separate the sum from the carry.','Week 3 revision notes, pp. 12–16 (gates), 17–20 (adders), 21–24 (one-bit memory).'],
-  [4,'Memory systems','Distinguish data capacity from addresses, tags and metadata.','Week 4 revision notes, pp. 2–9 (memory cells and hierarchy), 13–14 (cache and locality).'],
-  [5,'Text and real numbers','Label byte lengths or binary place values before calculating.','Week 5 revision notes, pp. 4–7 (text and UTF-8), 8–13 (fractions, rounding and IEEE 754).'],
-  [6,'Paging and IEEE 754','Separate fields before translating an address or decoding a number.','Week 6 revision notes, pp. 1–2 (virtualisation and paging), 2–4 (IEEE 754).'],
-  [8,'MIPS instructions','Trace each instruction in order and keep register values distinct from addresses.','Week 8 revision notes, pp. 3–7 (registers), 8–11 (branches and loops), 13–16 (encoding instructions).'],
-  [9,'MIPS memory and calls','Update the base register first, then apply the byte offset.','Week 9 revision notes, pp. 2–8 (addressing), 9–13 (calls and frames), 14–16 (objects and pointers).']
+  [1,'Computer architecture','Trace data between the processor, memory and peripherals.','Week 1 lecture slides, PDF pp. 39–64 (devices and operating systems) and 74–96 (architecture and servers). Week 1 course notes, printed pp. 19–30 (device-level architecture).'],
+  [2,'Integer representation','Label the width and signedness before interpreting bits.','Week 2 lecture slides, PDF pp. 34–60 (arithmetic and bitwise logic), 64–112 (integer formats) and 114–130 (byte order). Week 2 course notes, printed pp. 107–130 (bases and signed integers).'],
+  [3,'CPU and logic','Work one bit position at a time. Separate the sum from the carry.','Week 3 lecture slides, PDF pp. 136–178 (switches and gates) and 179–196 (adders). Week 3 course notes, PDF pp. 18–22 (latches and DRAM).'],
+  [4,'Memory systems','Distinguish data capacity from addresses, tags and metadata.','Week 4 lecture slides, PDF pp. 9–87 (memory hierarchy and cells) and 102–129 (cache and locality). Week 4 course notes, PDF pp. 1–12 (storage).'],
+  [5,'Text and real numbers','Label byte lengths or binary place values before calculating.','Week 5 lecture slides, PDF pp. 31–110 (character encodings) and 111–163 (floating point). Week 5 course notes, printed pp. 131–144 (floating point and text).'],
+  [6,'Paging and IEEE 754','Separate fields before translating an address or decoding a number.','Week 6 lecture slides (ECS404-6-2024-actual), PDF pp. 43–86 (virtualisation and virtual memory). IEEE 754 companion slides, PDF pp. 9–18 (fields and special exponents).'],
+  [8,'MIPS instructions','Trace each instruction in order and keep register values distinct from addresses.','Week 8 lecture slides, PDF pp. 8–54 (ISA and registers), 75–98 (branches and loops) and 99–107 (instruction formats).'],
+  [9,'MIPS memory and calls','Update the base register first, then apply the byte offset.','Week 9 lecture slides, PDF pp. 9–50 (memory layout and addressing), 51–93 (calls and frames) and 94–120 (objects and references).']
 ].map(([week,name,method,reading])=>({week,name,method,reading}));
 export const levels=['Accessible','Moderate','Stretch'];
 export const bin=(v,w=8)=>v.toString(2).padStart(w,'0');
