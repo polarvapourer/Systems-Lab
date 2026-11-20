@@ -1,0 +1,9 @@
+# This site has no build step. Allow only the files intended for publication.
+*
+!/.gitignore
+!/.nojekyll
+!/index.html
+!/style.css
+!/questions.js
+!/app.js
+!/README.md
