@@ -34,3 +34,7 @@ nav a { display: inline-flex; align-items: center; text-decoration: none; }
 .minitabs a,.actions a.primary,.actions a.secondary{display:inline-block;padding:.55rem .85rem;border-radius:6px;text-decoration:none;font-weight:600}.minitabs a.selected,.actions a.primary{background:#27513e;color:white}.qrow[href]{text-decoration:none}.learn details{padding:.7rem 0;border-top:1px solid var(--rule)}.learn .actions a.secondary{border:1px solid var(--rule)}progress{width:100%;accent-color:#42664d}
 
 .generator-summary{margin-top:12px}
+
+.concept-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: .95rem; }
+.concept-table caption { text-align: left; font-weight: 700; padding-bottom: .5rem; }
+.concept-table th, .concept-table td { text-align: left; vertical-align: top; padding: .45rem; border-bottom: 1px solid #bccbc5; }

@@ -8,7 +8,9 @@ export const courses = [
   [5,'Text and real numbers','Label byte lengths or binary place values before calculating.','Week 5 lecture slides, PDF pp. 31–110 (character encodings) and 111–163 (floating point). Week 5 course notes, printed pp. 131–144 (floating point and text).'],
   [6,'Paging and IEEE 754','Separate fields before translating an address or decoding a number.','Week 6 lecture slides (ECS404-6-2024-actual), PDF pp. 43–86 (virtualisation and virtual memory). IEEE 754 companion slides, PDF pp. 9–18 (fields and special exponents).'],
   [8,'MIPS instructions','Trace each instruction in order and keep register values distinct from addresses.','Week 8 lecture slides, PDF pp. 8–54 (ISA and registers), 75–98 (branches and loops) and 99–107 (instruction formats).'],
-  [9,'MIPS memory and calls','Update the base register first, then apply the byte offset.','Week 9 lecture slides, PDF pp. 9–50 (memory layout and addressing), 51–93 (calls and frames) and 94–120 (objects and references).']
+  [9,'MIPS memory and calls','Update the base register first, then apply the byte offset.','Week 9 lecture slides, PDF pp. 9–50 (memory layout and addressing), 51–93 (calls and frames) and 94–120 (objects and references).'],
+  [10,'Network foundations and links','Follow one packet across a link. Label bits, frames and time units.','Weeks 10–11 slides, pp. 4–38 and 58–87. Kurose and Ross, chapter 1, §§1.1–1.5. Stallings, §§2.1–2.4.'],
+  [11,'IP, transport and applications','Identify the next hop, the destination interface and the application endpoint separately.','Weeks 10–11 slides, pp. 39–56 and 88–148. Stallings, §§2.3–2.5. Kurose and Ross, chapter 1, §§1.5–1.7.']
 ].map(([week,name,method,reading])=>({week,name,method,reading}));
 export const levels=['Accessible','Moderate','Stretch'];
 export const bin=(v,w=8)=>v.toString(2).padStart(w,'0');
@@ -47,7 +49,86 @@ export const models=[
  model('encode',8,2,'Encode a MIPS addi','Give the unsigned decimal value of the 32-bit instruction word.',[field('rs','Source register number',0,31),field('rt','Destination register number',0,31),field('imm','Signed immediate',-32768,32767)],'I format: opcode[6] | rs[5] | rt[5] | immediate[16]','Place opcode 8 in the high six bits and mask the signed immediate to 16 bits.','Assembly operand order differs from the rs, rt field order.',({rs,rt,imm})=>{const n=8*2**26+rs*2**21+rt*2**16+(imm&65535);return result(['addi $'+rt+', $'+rs+', '+imm,'opcode = 8'],n,['Fields are 001000 | '+bin(rs,5)+' | '+bin(rt,5)+' | '+bin(imm&65535,16)+'.','Concatenating gives '+hex(n)+'.','The unsigned decimal word is '+n+'.']);}),
  model('array',9,0,'Locate a word in memory','At which byte address does this array element start?',[base,word],'address = base + 4 × index','MIPS words occupy four bytes and the first index is zero.','Adding the raw index treats words as bytes.',({base,i})=>result(['Word array starts at '+base,'Element index: '+i],base+i*4,['The element is '+i+' words beyond the base.','The byte offset is '+4*i+'.','Address = '+base+' + '+4*i+' = '+(base+4*i)+'.'])),
  model('stack',9,1,'Trace a stack-frame store','At which byte address does the saved register begin?',[field('sp','Initial stack pointer',4096,32760,8),field('n','Frame size in words',2,64),field('k','Saved slot from top (0 or 1)',0,1)],'new SP = old SP − frame bytes; address = new SP + offset','Update $sp before evaluating the store.','The register being saved contains data; the stack pointer supplies the base.',({sp,n,k})=>{const off=4*(n-1-k);return result(['Initial $sp: '+sp,'addiu $sp, $sp, -'+4*n,'sw $ra, '+off+'($sp)'],sp-4*n+off,['Allocate '+4*n+' bytes. New $sp = '+(sp-4*n)+'.','The store uses byte offset '+off+'.','Store address = '+(sp-4*n+off)+'.']);}),
- model('object',9,2,'Follow an object reference','Which byte address is accessed by the second load?',[base,field('ptr','Pointer read from memory',1024,65532,4),field('i','Field index in words',1,63)],'load a pointer, then address relative to its value','The first load fetches the pointer stored at the slot. Use that value as the next base.','The address of the pointer slot and the address stored there are different.',({base,ptr,i})=>result(['$s0 = '+base,'Memory word at '+base+' contains '+ptr,'lw $t0, 0($s0)','lw $t1, '+4*i+'($t0)'],ptr+4*i,['Read the word at '+base+': $t0 becomes '+ptr+'.','The field offset is '+i+' × 4 = '+4*i+'.','Effective address = '+ptr+' + '+4*i+' = '+(ptr+4*i)+'.']))
+ model('object',9,2,'Follow an object reference','Which byte address is accessed by the second load?',[base,field('ptr','Pointer read from memory',1024,65532,4),field('i','Field index in words',1,63)],'load a pointer, then address relative to its value','The first load fetches the pointer stored at the slot. Use that value as the next base.','The address of the pointer slot and the address stored there are different.',({base,ptr,i})=>result(['$s0 = '+base,'Memory word at '+base+' contains '+ptr,'lw $t0, 0($s0)','lw $t1, '+4*i+'($t0)'],ptr+4*i,['Read the word at '+base+': $t0 becomes '+ptr+'.','The field offset is '+i+' × 4 = '+4*i+'.','Effective address = '+ptr+' + '+4*i+' = '+(ptr+4*i)+'.'])),
+ model('symbolrate', 10, 0, 'Convert symbols to bits',
+   'What is the raw data rate in kbit/s? Assume one symbol per interval and no overhead.',
+   [field('bits','Bits per symbol',1,6), field('rate','Symbol rate (ksymbol/s)',10,2000)],
+   'raw bit rate = symbol rate × bits per symbol',
+   'Count how many bits select one of the available states.',
+   'Symbol rate counts intervals. One interval can encode several bits.',
+   ({bits,rate}) => result(
+     [`Distinct signal states: ${2**bits}`, `Symbol rate: ${rate} ksymbol/s`],
+     rate * bits,
+     [`There are ${2**bits} states, so each symbol can carry ${bits} bits (2^${bits} states).`,
+      `Each millisecond contains ${rate} symbols.`,
+      `The raw rate is ${rate} × ${bits} = ${rate * bits} kbit/s.`])),
+ model('framepayload', 10, 1, 'Separate framing from payload',
+   'How many payload bits arrive in this run of full frames? The stated overhead includes all non-payload bits.',
+   [field('count','Complete frames',1,160), field('width','Bits per frame',8,64), field('overhead','Overhead bits per frame',1,7)],
+   'payload bits = complete frames × (frame width − overhead)',
+   'Work out the useful data in one frame first.',
+   'Every frame carries its own overhead.',
+   ({count,width,overhead}) => {
+     const payload = width - overhead;
+     return result([`Frames: ${count}`, `Each frame: ${width} bits including ${overhead} overhead bits`],
+       count * payload,
+       [`Each frame contains ${width} − ${overhead} = ${payload} payload bits.`,
+        `Across ${count} frames the payload is ${count} × ${payload} = ${count * payload} bits.`,
+        `Check against the full stream: ${count * width} bits sent, including ${count * overhead} overhead bits.`]);
+   }),
+ model('linkdelay', 10, 2, 'Time a store-and-forward path',
+   'When does the last bit reach the destination, in microseconds, measured from the start of transmission? Ignore processing and queuing.',
+   [field('bytes','Packet length (bytes)',64,1500), field('km','Distance per link (km)',1,400), field('links','Identical links',1,8)],
+   'path delay for one packet = number of links × (transmission + propagation)',
+   'Use the same time unit for putting bits on the link and for their travel.',
+   'Count each link transmission, including the first one from the source.',
+   ({bytes,km,links}) => {
+     const perLink = bytes + 5 * km;
+     return result([`One ${bytes}-byte packet · ${links} identical store-and-forward links`,
+       `Each link: ${km} km at 8 Mbit/s · signal speed 200,000 km/s`], links * perLink,
+       [`Transmission: ${bytes * 8} bits ÷ 8 bits/µs = ${bytes} µs per link.`,
+        `Propagation: 1 km takes 5 µs at this speed, so ${km} km takes ${km * 5} µs.`,
+        `Store-and-forward adds the delays for the whole packet on each link: ${links} × ${perLink} = ${links * perLink} µs.`]);
+   }),
+ model('tcpack', 11, 0, 'Read a cumulative TCP acknowledgement',
+   'What acknowledgement number should the receiver send? These data bytes follow all previous bytes in order, without SYN or FIN.',
+   [field('seq','First byte sequence number',1,60000), field('length','Payload length (bytes)',1,1460)],
+   'cumulative ACK = first sequence number + in-order data length',
+   'Number the bytes inclusively, then identify the next expected byte.',
+   'An ACK names the next byte expected.',
+   ({seq,length}) => result([`First data byte: ${seq}`, `TCP payload: ${length} bytes`], seq + length,
+     [`The first byte occupies position ${seq}.`,
+      `The last byte is ${seq} + ${length} − 1 = ${seq + length - 1}.`,
+      `The next expected byte is ${seq + length}, so ACK = ${seq + length}.`])),
+ model('nextlink', 11, 1, 'Choose a route by longest prefix',
+   'Which numbered routing-table row will forward this packet?',
+   [field('subnet','Third octet (destination)',1,2), field('host','Last octet (destination)',1,254)],
+   'choose the matching destination prefix with the greatest length',
+   'Test /0, /24 and /25. The /25 here covers the upper half of its /24.',
+   'The default route matches every IPv4 address, but a longer match takes priority.',
+   ({subnet,host}) => {
+     const local = subnet === 1, upper = local && host >= 128;
+     const row = upper ? 3 : local ? 2 : 1;
+     return result([`Destination: 192.0.${subnet}.${host}`, 'Row 1: 0.0.0.0/0 → gateway A',
+       'Row 2: 192.0.1.0/24 → gateway B', 'Row 3: 192.0.1.128/25 → gateway C'], row,
+       [`Row 1 always matches. Row 2 requires the first three octets 192.0.1, so it ${local ? 'matches' : 'does not match'}.`,
+        `Row 3 covers 192.0.1.128–192.0.1.255. The destination falls ${upper ? 'inside' : 'outside'} that range.`,
+        `The longest matching prefix is /${[0,24,25][row - 1]}. Forward using row ${row}.`]);
+   }),
+ model('tcpwindow', 11, 2, 'Find the remaining TCP allowance',
+   'How many additional kB may the sender transmit under these two window limits? Assume data is ready to send.',
+   [field('rwnd','Advertised receive window (kB)',1,128), field('cwnd','Congestion window (kB)',1,128), field('flight','Already outstanding (kB)',0,100)],
+   'new allowance = max(0, min(receive window, congestion window) − outstanding data)',
+   'Choose the tighter window before taking account of bytes already sent.',
+   'A window is a limit on total outstanding data, so it includes bytes in flight.',
+   ({rwnd,cwnd,flight}) => {
+     const limit = Math.min(rwnd,cwnd), available = Math.max(0,limit-flight);
+     return result([`Receiver advertises ${rwnd} kB · congestion window ${cwnd} kB`, `Already in flight: ${flight} kB`], available,
+       [`Receiver buffer space permits ${rwnd} kB outstanding. Network congestion control permits ${cwnd} kB.`,
+        `Both limits apply, so the outstanding-data limit is ${limit} kB.`,
+        `With ${flight} kB already outstanding, the sender can add ${available} kB.` +
+          (flight > limit ? ' The window has shrunk below the outstanding amount. Wait for acknowledgements or a window increase.' : '')]);
+   })
 ];
 export function make(model,values){
  const out=model.run(values);

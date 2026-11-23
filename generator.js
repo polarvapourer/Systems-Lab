@@ -1,6 +1,6 @@
 import {courses,models,make,sample,levels} from './catalogue.js';
 export {levels};
-export const VERSION=1, subjects=courses.map(c=>c.name);
+export const VERSION=2, subjects=courses.map(c=>c.name);
 export const defaultConfig={subject:'Mixed revision',level:'Mixed difficulty',count:10,seed:''};
 export function randomSource(seed){
   let x=2166136261;
@@ -13,16 +13,22 @@ function shuffle(values,rng){
  for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
  return a;
 }
+// Shared links and saved attempts must replay the original deck.
+const originalCourses = courses.filter(course => course.week < 10);
 export function configOK(c){
- return !!c && [...subjects,'Mixed revision'].includes(c.subject) && [...levels,'Mixed difficulty'].includes(c.level)
+ return !!c && [1,VERSION].includes(c.version ?? VERSION)
+  && (c.version !== 1 || c.subject === 'Mixed revision' || originalCourses.some(course => course.name === c.subject))
+  && [...subjects,'Mixed revision'].includes(c.subject) && [...levels,'Mixed difficulty'].includes(c.level)
   && Number.isInteger(c.count) && c.count>=1 && c.count<=100 && typeof c.seed==='string' && c.seed.trim().length>0 && c.seed.length<=64;
 }
 export function generate(c){
  if(!configOK(c))throw Error('Choose 1–100 questions and enter a seed of 1–64 characters.');
- const rng=randomSource(JSON.stringify([VERSION,c.subject,c.level,c.count,c.seed]));
+ const version = c.version ?? VERSION;
+ const pool = version === 1 ? originalCourses : courses;
+ const rng=randomSource(JSON.stringify([version,c.subject,c.level,c.count,c.seed]));
  const easy=Math.round(.3*c.count), hard=Math.round(.2*c.count);
  const order=[],seen=new Set(),deck=[];
- while(order.length<c.count)order.push(...shuffle(courses,rng));
+ while(order.length<c.count)order.push(...shuffle(pool,rng));
  for(let i=0;i<c.count;i++){
    const course=c.subject==='Mixed revision'?order[i]:courses.find(w=>w.name===c.subject);
    const level=c.level==='Mixed difficulty'?(i<easy?0:i<c.count-hard?1:2):levels.indexOf(c.level);

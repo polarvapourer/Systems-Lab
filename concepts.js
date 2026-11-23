@@ -1,3 +1,5 @@
+import {networkGuides} from './network-guides.js';
+
 export const guides = [
   {
     "week": 1,
@@ -912,5 +914,6 @@ export const guides = [
       "MIPS Green Sheet, PDF pp. 1–2, for instruction encodings, registers and ASCII.",
       "Patterson and Hennessy, Computer Organization and Design (5th ed.), §2.8 on saving registers and making procedure calls, and §2.14 on arrays and pointers."
     ]
-  }
+  },
+  ...networkGuides
 ];

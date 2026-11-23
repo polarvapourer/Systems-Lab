@@ -2,7 +2,8 @@ import {guideLink} from './study.js';
 import {defaultConfig,subjects,levels,generate,VERSION,configOK} from './generator.js';
 import {figure,esc,icon} from './diagrams.js';
 import {guidanceCheckbox, guidanceEnabled} from './guided.js';
-const prefix='systems-generated-v'+VERSION;
+const prefix = c => 'systems-generated-v' + c.version;
+const lastSetKey = 'systems-generated-last';
 const saved=(k)=>{try{return JSON.parse(localStorage.getItem(k));}catch{return null;}};
 const persist=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch{}};
 const configKey=c=>JSON.stringify([c.subject,c.level,c.count,c.seed]);
@@ -21,22 +22,23 @@ function restoreAttempt(question, saved){
 let cfg, deck=[],index=0,attempts=[],setup=false,notice='',pending=null,playing=null,formDraft=null;
 let refresh=()=>{};
 export const stopPlayback=()=>{if(playing)clearInterval(playing);playing=null;};
-function save(){if(cfg)persist(prefix+configKey(cfg),{index,attempts});}
+function save(){if(cfg)persist(prefix(cfg)+configKey(cfg),{index,attempts});}
 function load(c,position){
- const generated=generate(c),old=saved(prefix+configKey(c));
- stopPlayback();cfg=c;deck=generated;attempts=deck.map((question,i)=>restoreAttempt(question,old?.attempts?.[i]));index=Math.max(0,Math.min(deck.length-1,Number.isInteger(position)?position:Number.isInteger(old?.index)?old.index:0));setup=false;pending=null;notice='';formDraft=null;persist(prefix+'-last',c);save();
+ const generated=generate(c),old=saved(prefix(c)+configKey(c));
+ stopPlayback();cfg=c;deck=generated;attempts=deck.map((question,i)=>restoreAttempt(question,old?.attempts?.[i]));index=Math.max(0,Math.min(deck.length-1,Number.isInteger(position)?position:Number.isInteger(old?.index)?old.index:0));setup=false;pending=null;notice='';formDraft=null;persist(lastSetKey,c);save();
 }
 const params=new URLSearchParams(location.search);
 let linked=false;
-if(params.get('gen')===String(VERSION)){
- const c={subject:params.get('topic'),level:params.get('level'),count:Number(params.get('n')),seed:params.get('seed')};
+if(['1',String(VERSION)].includes(params.get('gen'))){
+ const c={version:Number(params.get('gen')),subject:params.get('topic'),level:params.get('level'),count:Number(params.get('n')),seed:params.get('seed')};
  if(configOK(c)){
   try { load(c,(Number(params.get('q'))||1)-1);linked=true; }
   catch { notice='This link could not generate a practice set. Try a different seed or fewer questions.';setup=true; }
  }
 }
 if(!cfg&&!setup){
- const c=saved(prefix+'-last');
+ const previous=saved('systems-generated-v1-last');
+ const c=saved(lastSetKey) ?? (previous && {...previous,version:1});
  if(configOK(c)){
   try { load(c); }
   catch { notice='The saved practice set could not be restored. Generate a new set to continue.'; }
@@ -53,7 +55,7 @@ export function openGeneratorSetup(){
 }
 
 if(!linked && !setup && params.get('generator')==='1' && !cfg)openGeneratorSetup();
-function shareURL(at){const u=new URL(location.href);u.search='';u.hash='';for(const [k,v] of Object.entries({gen:VERSION,topic:cfg.subject,level:cfg.level,n:cfg.count,seed:cfg.seed,q:at+1}))u.searchParams.set(k,v);return u.href;}
+function shareURL(at){const u=new URL(location.href);u.search='';u.hash='';for(const [k,v] of Object.entries({gen:cfg.version,topic:cfg.subject,level:cfg.level,n:cfg.count,seed:cfg.seed,q:at+1}))u.searchParams.set(k,v);return u.href;}
 function syncUrl(){if(cfg)history.replaceState(null,'',shareURL(index));}
 function nativeSeed(){return Array.from(crypto.getRandomValues(new Uint32Array(2)),x=>x.toString(36)).join('-');}
 function optionList(values,v){return values.map(x=>'<option '+(x===v?'selected':'')+'>'+esc(x)+'</option>').join('');}
@@ -69,7 +71,7 @@ function question(guided){const q=deck[index],a=attempts[index],picked=a.picks.m
 export function generatorView(redraw, guided=guidanceEnabled()){
  refresh=redraw;
  if(!cfg||setup){const confirm=pending?`<div class="message">Open the new set? Your current set can be reopened with its seed.<div class="actions"><button class="primary" data-gen="confirm">Open new set</button><button class="secondary" data-gen="keep">Keep working</button></div></div>`:'';
- return '<div class="workspace"><div class="panel"><div class="panelhead"><span class="kicker">'+icon('pencil')+' Question generator</span></div><div class="panelbody">'+form()+confirm+(notice?'<p class="message" role="alert">'+esc(notice)+'</p>':'')+'</div></div><aside class="notes"><div class="notetitle">'+icon('book')+' How it works</div><h3>Mixed revision</h3><p>Mixed sets rotate through the eight ECS404U topics. Mixed difficulty starts with shorter questions and moves on to ones with more steps.</p><h3>Practise together</h3><p>Share a seed and settings to get the same questions. Each student keeps their own answers and progress in their browser.</p></aside></div>';}
+ return '<div class="workspace"><div class="panel"><div class="panelhead"><span class="kicker">'+icon('pencil')+' Question generator</span></div><div class="panelbody">'+form()+confirm+(notice?'<p class="message" role="alert">'+esc(notice)+'</p>':'')+'</div></div><aside class="notes"><div class="notetitle">'+icon('book')+' How it works</div><h3>Mixed revision</h3><p>Mixed sets rotate through the teaching weeks in the workbook. Mixed difficulty starts with shorter questions and moves on to ones with more steps.</p><h3>Practise together</h3><p>Share a seed and settings to get the same questions. Each student keeps their own answers and progress in their browser.</p></aside></div>';}
  return `<div class="sectionhead"><h2>Generated practice</h2><button class="secondary" data-gen="setup">Generate another set</button></div><div class="workspace">${question(guided)}<aside><div class="notes"><div class="notetitle">${icon('book')} Practice set</div><p class="generator-summary">${esc(cfg.subject)} · ${esc(cfg.level)}</p><p class="seed">Seed <code>${esc(cfg.seed)}</code></p><div class="switcher"><button data-gen="share">Copy question link</button><button data-gen="shareset">Copy set link</button></div><div class="switcher"><button data-gen="print">Print questions</button><button data-gen="answers">Print solutions</button></div><p id="shareStatus" aria-live="polite">${esc(notice)}</p></div>${navigation()}</aside></div>`;
 }
 function jump(i){stopPlayback();index=i;notice='';save();syncUrl();refresh();document.getElementById('genQuestion')?.focus({preventScroll:true});document.getElementById('genQuestion')?.scrollIntoView({block:'nearest'});}
@@ -103,8 +105,8 @@ function check(){const q=deck[index],a=attempts[index];let correct=false;
 }
 function printSet(solutions){const el=document.createElement('section');el.id='printset';el.innerHTML='<h1>Systems-Lab · '+(solutions?'Worked solutions':'Practice questions')+'</h1><p>'+esc(cfg.subject)+' · '+esc(cfg.level)+' · Seed '+esc(cfg.seed)+'</p>'+deck.map((q,i)=>'<article><h2>'+(i+1)+'. '+esc(q.title)+'</h2><p>'+esc(q.prompt)+'</p>'+figure(q.figure)+(q.type==='selection'?'<p>Options: '+q.choices.map(esc).join(' · ')+'</p>':'')+(solutions?'<ol>'+q.steps.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ol>':'<p>Answer: _____________________________________</p>')+'</article>').join('');document.body.append(el);window.addEventListener('afterprint',()=>el.remove(),{once:true});window.print();}
 export function wireGenerator(root){
- root.addEventListener('submit',e=>{if(e.target.id!=='generatorForm')return;e.preventDefault();const fd=new FormData(e.target),c={subject:fd.get('subject'),level:fd.get('level'),count:Number(fd.get('count')),seed:fd.get('seed').trim()||nativeSeed()};if(!configOK(c))return;
- if(cfg&&configKey(cfg)!==configKey(c)){pending=c;formDraft=c;refresh();}else accept(c);});
+ root.addEventListener('submit',e=>{if(e.target.id!=='generatorForm')return;e.preventDefault();const fd=new FormData(e.target),c={version:VERSION,subject:fd.get('subject'),level:fd.get('level'),count:Number(fd.get('count')),seed:fd.get('seed').trim()||nativeSeed()};if(!configOK(c))return;
+ if(cfg&&(cfg.version!==c.version || configKey(cfg)!==configKey(c))){pending=c;formDraft=c;refresh();}else accept(c);});
  root.addEventListener('input',e=>{if(e.target.id==='generatedAnswer'){attempts[index].input=e.target.value;attempts[index].feedback='';root.querySelector('[aria-live="polite"] .message')?.remove();save();}});
  root.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='generatedAnswer'){e.preventDefault();root.querySelector('[data-gen="check"]').click();}});
  root.addEventListener('click',async e=>{const b=e.target.closest('button,[data-venn]');if(!b)return;

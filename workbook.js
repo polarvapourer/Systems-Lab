@@ -74,7 +74,7 @@ function workspace(){
  '<div class="actions"><button class="primary" data-action="check">Check answer</button><button class="secondary" data-action="hint">Hint</button><button class="ghost" data-action="solution">'+(a.solution?'Hide':'Show')+' worked answer</button></div><div aria-live="polite">'+(a.message?'<p class="message">'+esc(a.message)+'</p>':'')+'</div>'+
  (a.hint?'<p class="message">'+esc(guided?q.rule:q.hint)+'</p>':'')+(a.solution?'<ol class="steps-list">'+q.steps.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ol><p><b>Common mistake.</b> '+esc(q.mistake)+'</p>':'')+
  (q.calcLink?'<a href="'+esc(q.calcLink)+'">Edit these inputs in the calculator</a>':'')+
- '<div class="actions"><button class="secondary" data-action="advance">'+(position()<bank().length-1?'Next exercise':currentWeek!==9?'Next topic':'View progress')+'</button></div></div></article><aside>'+fieldNotes(q)+library()+'</aside></div>';
+ '<div class="actions"><button class="secondary" data-action="advance">'+(position()<bank().length-1?'Next exercise':currentWeek!==courses.at(-1).week?'Next topic':'View progress')+'</button></div></div></article><aside>'+fieldNotes(q)+library()+'</aside></div>';
 }
 function expModel(){
  const options=models.filter(m=>m.week===currentWeek);
@@ -106,7 +106,7 @@ function render(){
    if(active)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current');
    if(name==='workspace')el.href=pageURL(c.week,'practice');
    if(name==='guide')el.href=pageURL(c.week,'guide');
-   if(name==='progress'){el.href='./#progress';el.textContent='Progress · '+lessons.flat().filter(q=>saved.completed[q.id]).length+'/32';}
+   if(name==='progress'){el.href='./#progress';el.textContent='Progress · '+lessons.flat().filter(q=>saved.completed[q.id]).length+'/'+lessons.flat().length;}
  });
  if(currentPage==='generator'){root.innerHTML=generatorView(render,guided);return;}
  stopPlayback();
