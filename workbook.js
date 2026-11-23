@@ -8,8 +8,7 @@ import {generatorView,wireGenerator,hasSharedSet,stopPlayback} from './practice-
 
 const root=document.getElementById('app');
 const key='systems-workspace-v2';
-let saved={week:1,positions:{},attempts:{},explore:{},completed:{}};
-try {Object.assign(saved,JSON.parse(localStorage.getItem(key))??{});}catch{}
+const saved={week:1,positions:{},attempts:{},explore:{},completed:{}};
 function save(){try{localStorage.setItem(key,JSON.stringify(saved));}catch{}}
 let guided=guidanceEnabled();
 const lessons=courses.map(c=>{
@@ -22,6 +21,40 @@ const lessons=courses.map(c=>{
  figure:{data:x.data},steps:x.marks});
  return fixed;
 });
+function restore() {
+ try {
+  const stored=JSON.parse(localStorage.getItem(key));
+  if(!stored)return;
+  if(courses.some(c=>c.week===stored.week))saved.week=stored.week;
+  courses.forEach(({week},index)=>{
+   const position=stored.positions?.[week];
+   if(Number.isInteger(position)&&position>=0&&position<lessons[index].length)saved.positions[week]=position;
+   for(const q of lessons[index]){
+    if(stored.completed?.[q.id]===true)saved.completed[q.id]=true;
+    const answer=stored.attempts?.[q.id];
+    if(!answer)continue;
+    saved.attempts[q.id]={
+     picks:Array.isArray(answer.picks)?(q.choices??[]).filter(choice=>answer.picks.includes(choice)):[],
+     input:typeof answer.input==='string'?answer.input:'',
+     message:typeof answer.message==='string'?answer.message:'',
+     hint:answer.hint===true,solution:answer.solution===true,
+    };
+   }
+   const experiment=stored.explore?.[week];
+   const model=models.find(m=>m.week===week&&m.id===experiment?.id);
+   if(!model)return;
+   const values=sample(model,randomSource('explore:'+model.id));
+   for(const field of model.fields){
+    const value=experiment.values?.[field.key];
+    if(Number.isInteger(value)&&value>=field.min&&value<=field.max&&(value-field.min)%field.step===0){
+     values[field.key]=value;
+    }
+   }
+   saved.explore[week]={id:model.id,values};
+  });
+ }catch{}
+}
+restore();
 function pageURL(week,mode){return './?week='+week+'#'+mode;}
 function weekBar(c){
  return '<div class="weeknav"><label for="week">Teaching week</label><select id="week">'+courses.map(x=>'<option value="'+x.week+'" '+(x===c?'selected':'')+'>Week '+x.week+' · '+esc(x.name)+'</option>').join('')+'</select></div>';
@@ -54,7 +87,7 @@ function expValues(m){
 }
 function explore(){
  const m=expModel(),v=expValues(m),q=make(m,v);
- return '<div class="workspace"><section class="panel"><div class="panelhead"><span class="kicker">Explore · Week '+currentWeek+'</span></div><div class="panelbody"><h2>Change the inputs</h2><div class="calc-form"><label>Experiment<select id="experiment">'+models.filter(x=>x.week===currentWeek).map(x=>'<option value="'+x.id+'" '+(x===m?'selected':'')+'>'+esc(x.title)+'</option>').join('')+'</select></label><div class="calc-grid">'+m.fields.map(f=>'<label>'+esc(f.label)+'<input type="number" data-param="'+f.key+'" value="'+v[f.key]+'" min="'+f.min+'" max="'+f.max+'" step="'+f.step+'"></label>').join('')+'</div></div>'+
+ return '<div class="workspace"><section class="panel"><div class="panelhead"><span class="kicker">Explore · Week '+currentWeek+'</span></div><div class="panelbody"><h2>Change the inputs</h2><div class="calc-form"><label>Experiment<select id="experiment">'+models.filter(x=>x.week===currentWeek).map(x=>'<option value="'+x.id+'" '+(x===m?'selected':'')+'>'+esc(x.title)+'</option>').join('')+'</select></label><div class="calc-grid">'+m.fields.map(f=>'<label>'+esc(f.label)+'<input type="number" data-param="'+f.key+'" value="'+esc(v[f.key])+'" min="'+f.min+'" max="'+f.max+'" step="'+f.step+'"></label>').join('')+'</div></div>'+
  (m.fields.some(f=>f.key==='a'&&f.max===255&&f.min===0)?'<div class="bitstrip">'+[...bin(v.a)].map((x,i)=>'<button data-flip="'+(7-i)+'" aria-label="Toggle bit '+(7-i)+'" aria-pressed="'+(x==='1')+'">'+x+'</button>').join('')+'</div>':'')+
  figure(q.figure)+'<h3>'+esc(q.prompt)+'</h3><p class="message"><b>Result.</b> '+esc(Array.isArray(q.answer)?q.answer.join(', '):q.answer)+'</p><ol>'+q.steps.slice(1).map(s=>'<li>'+esc(s)+'</li>').join('')+'</ol>'+'<a href="'+esc(q.calcLink)+'">Try these inputs yourself</a></div></section><aside>'+fieldNotes({...q,rule:m.rule})+library()+'</aside></div>';
 }
