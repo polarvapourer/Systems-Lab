@@ -1,5 +1,5 @@
 
-import {questions, topics, modelDiagram, reviewTips, variationAnswers} from './paper-questions.js?v=a1ff0d3480';
+import {questions, topics, modelDiagram, reviewTips, variationAnswers} from './paper-questions.js?v=94c4ee293e';
 import {esc} from './diagrams.js';
 
 const view = document.getElementById('paperView');

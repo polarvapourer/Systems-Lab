@@ -1,4 +1,4 @@
-import {guides} from './concepts.js?v=3d5e2dd412';
+import {guides} from './concepts.js?v=c2d00cb47b';
 import {esc} from './diagrams.js';
 export const sectionFor={fetch:4,logger:2,io:3,unsigned:1,signed:6,overflow:7,setbits:0,gates:6,adder:7,capacity:0,cache:6,hits:6,utf:4,fraction:7,utfseq:5,exponent:4,paging:2,float:5,addi:3,branch:9,encode:8,array:8,stack:5,object:7,symbolrate:4,framepayload:6,linkdelay:9,tcpack:3,nextlink:0,tcpwindow:4,'case-10':7,'case-11':1};
 export function guideLink(week,model){

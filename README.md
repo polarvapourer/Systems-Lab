@@ -4,7 +4,7 @@
 
 The workbook opens on the concept guide. Choose a teaching week and switch between **Learn**, **Practice** and **Explore**. It covers weeks 1–6 and 8–11 of Computer Systems and Networks. The explanations, annotated examples, retrieval checks and reading references are available without signing in.
 
-[Week 10 · Network foundations and links](https://polarvapourer.github.io/Systems-Lab/?week=10#guide) covers switching, layers, signalling, framing and delay. [Week 11 · IP, transport and applications](https://polarvapourer.github.io/Systems-Lab/?week=11#guide) follows a web request through routing, TCP, DNS and HTTP.
+[Week 10 · Network foundations and links](https://polarvapourer.github.io/Systems-Lab/?week=10#guide) covers packet and circuit switching, the OSI overview, HTTP, TCP and UDP, then signalling and framing through MAC addressing. The guide labels the textbook calculations and Friday’s Wireshark lab separately. [Week 11 · IP, transport and applications](https://polarvapourer.github.io/Systems-Lab/?week=11#guide) previews the next lecture from the shared slides, starting at the network layer and following a request through to the application.
 
 - **Workspace** has 40 fixed exercises, including select-all concept questions, hints, partial-answer feedback and worked answers. Change the inputs under Explore to test a different case.
 - **Generator** makes 1–100 distinct instances from a topic or mixed revision. Choose accessible, moderate, stretch or mixed difficulty. A seed reproduces the same set. Share a question or set link, play through the steps, or print questions and solutions separately.

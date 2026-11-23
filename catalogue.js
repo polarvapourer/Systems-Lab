@@ -9,8 +9,8 @@ export const courses = [
   [6,'Paging and IEEE 754','Separate fields before translating an address or decoding a number.','Week 6 lecture slides (ECS404-6-2024-actual), PDF pp. 43–86 (virtualisation and virtual memory). IEEE 754 companion slides, PDF pp. 9–18 (fields and special exponents).'],
   [8,'MIPS instructions','Trace each instruction in order and keep register values distinct from addresses.','Week 8 lecture slides, PDF pp. 8–54 (ISA and registers), 75–98 (branches and loops) and 99–107 (instruction formats).'],
   [9,'MIPS memory and calls','Update the base register first, then apply the byte offset.','Week 9 lecture slides, PDF pp. 9–50 (memory layout and addressing), 51–93 (calls and frames) and 94–120 (objects and references).'],
-  [10,'Network foundations and links','Follow one packet across a link. Label bits, frames and time units.','Weeks 10–11 slides, pp. 4–38 and 58–87. Kurose and Ross, chapter 1, §§1.1–1.5. Stallings, §§2.1–2.4.'],
-  [11,'IP, transport and applications','Identify the next hop, the destination interface and the application endpoint separately.','Weeks 10–11 slides, pp. 39–56 and 88–148. Stallings, §§2.3–2.5. Kurose and Ross, chapter 1, §§1.5–1.7.']
+  [10,'Network foundations and links','Follow one packet across a link. Label bits, frames and time units.','Week 10 lecture: slides 4–87, including the TCP/UDP overview on pp. 39–57. Friday Wireshark lab: pp. 142–148. Kurose and Ross, chapter 1, §§1.1–1.5. Stallings, §§2.1–2.4.'],
+  [11,'IP, transport and applications','Identify the next hop, the destination interface and the application endpoint separately.','Week 11 preview: slides 88–141, starting at layer 3. Week 10 introduced TCP/UDP on pp. 39–57. Slides 142–148 support the Wireshark lab. Stallings, §§2.3–2.5. Kurose and Ross, chapter 1, §§1.5–1.7.']
 ].map(([week,name,method,reading])=>({week,name,method,reading}));
 export const levels=['Accessible','Moderate','Stretch'];
 export const bin=(v,w=8)=>v.toString(2).padStart(w,'0');
@@ -76,7 +76,7 @@ export const models=[
         `Across ${count} frames the payload is ${count} × ${payload} = ${count * payload} bits.`,
         `Check against the full stream: ${count * width} bits sent, including ${count * overhead} overhead bits.`]);
    }),
- model('linkdelay', 10, 2, 'Time a store-and-forward path',
+ model('linkdelay', 10, 2, 'Textbook practice · Time a store-and-forward path',
    'When does the last bit reach the destination, in microseconds, measured from the start of transmission? Ignore processing and queuing.',
    [field('bytes','Packet length (bytes)',64,1500), field('km','Distance per link (km)',1,400), field('links','Identical links',1,8)],
    'path delay for one packet = number of links × (transmission + propagation)',
