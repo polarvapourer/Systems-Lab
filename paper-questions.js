@@ -1,6 +1,6 @@
-import {courses,models,make,sample} from './catalogue.js';
-import {randomSource} from './generator.js';
-import {cases} from './cases.js';
+import {courses,models,make,sample} from './catalogue.js?v=78d977e0b5';
+import {randomSource} from './generator.js?v=a5fdb39473';
+import {cases} from './cases.js?v=14b078535e';
 import {esc} from './diagrams.js';
 export const topics=courses.map(t=>t.name);
 export const questions=[],reviewTips={},variationAnswers={};

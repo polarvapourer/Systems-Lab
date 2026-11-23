@@ -1,10 +1,10 @@
-import {courses,levels,models,make,sample,bin} from './catalogue.js';
-import {cases} from './cases.js';
+import {courses,levels,models,make,sample,bin} from './catalogue.js?v=78d977e0b5';
+import {cases} from './cases.js?v=14b078535e';
 import {esc,figure} from './diagrams.js';
-import {guidePage,guideLink,printGuide} from './study.js';
+import {guidePage,guideLink,printGuide} from './study.js?v=c46e292e83';
 import {guidanceCheckbox,guidanceEnabled,saveGuidance} from './guided.js';
-import {randomSource} from './generator.js';
-import {generatorView,wireGenerator,hasSharedSet,stopPlayback} from './practice-set.js';
+import {randomSource} from './generator.js?v=a5fdb39473';
+import {generatorView,wireGenerator,hasSharedSet,stopPlayback} from './practice-set.js?v=9dd1dc488f';
 
 const root=document.getElementById('app');
 const key='systems-workspace-v2';

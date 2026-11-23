@@ -1,4 +1,4 @@
-import {networkGuides} from './network-guides.js';
+import {networkGuides} from './network-guides.js?v=119f6a1ea2';
 
 export const guides = [
   {

@@ -1,5 +1,5 @@
-import {courses,models,make,sample} from './catalogue.js';
-import {randomSource} from './generator.js';
+import {courses,models,make,sample} from './catalogue.js?v=78d977e0b5';
+import {randomSource} from './generator.js?v=a5fdb39473';
 import {esc,figure} from './diagrams.js';
 import {evaluateExpression} from './expression.js';
 const root=document.querySelector('#calculator'),params=new URLSearchParams(location.search);

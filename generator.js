@@ -1,4 +1,4 @@
-import {courses,models,make,sample,levels} from './catalogue.js';
+import {courses,models,make,sample,levels} from './catalogue.js?v=78d977e0b5';
 export {levels};
 export const VERSION=2, subjects=courses.map(c=>c.name);
 export const defaultConfig={subject:'Mixed revision',level:'Mixed difficulty',count:10,seed:''};

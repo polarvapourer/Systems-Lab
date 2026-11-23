@@ -1,5 +1,5 @@
-import {guideLink} from './study.js';
-import {defaultConfig,subjects,levels,generate,VERSION,configOK} from './generator.js';
+import {guideLink} from './study.js?v=c46e292e83';
+import {defaultConfig,subjects,levels,generate,VERSION,configOK} from './generator.js?v=a5fdb39473';
 import {figure,esc,icon} from './diagrams.js';
 import {guidanceCheckbox, guidanceEnabled} from './guided.js';
 const prefix = c => 'systems-generated-v' + c.version;
