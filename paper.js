@@ -5,11 +5,14 @@ import {esc} from './diagrams.js';
 const view = document.getElementById('paperView');
 const printable = document.getElementById('paperPrint');
 const storageKey = 'systems-lab-written-paper-v1';
-const params = new URLSearchParams(location.search);
 const bank = new Map(questions.map(q => [q.id, q]));
 const printMode = document.body.classList;
+const sharedSelection = new URLSearchParams(location.search).get('set');
+const requestedIds = sharedSelection && sharedSelection.length <= 4096 ? sharedSelection.split(',') : null;
+const sharedIds = validIds(requestedIds) ? requestedIds : null;
 let state = readState();
-let setup = !state;
+let pendingShared = sharedIds && state && sharedIds.join(',') !== state.ids.join(',') ? sharedIds : null;
+let setup = !state || Boolean(pendingShared);
 let replacing = false;
 let shareMessage = '';
 let fileError = '';
@@ -29,12 +32,10 @@ function newSession(ids, style='study', guided=false, minutes=null) {
 }
 
 function readState() {
-  const linked = params.get('set')?.split(',');
-  const ids = validIds(linked) ? linked : null;
   try {
     const saved = JSON.parse(localStorage.getItem(storageKey));
     if (validIds(saved?.ids) && Number.isInteger(saved.index) && saved.index >= 0 &&
-        saved.index < saved.ids.length && (!ids || saved.ids.join(',') === ids.join(','))) {
+        saved.index < saved.ids.length) {
       const timed = saved.style === 'timed';
       if (!timed || (Number.isInteger(saved.minutes) && saved.minutes >= 1 && saved.minutes <= 180 &&
           Number.isSafeInteger(saved.deadline) && saved.deadline > 0)) {
@@ -60,7 +61,7 @@ function readState() {
   } catch {
     // Paper practice can run without browser storage.
   }
-  return ids ? newSession(ids) : null;
+  return sharedIds ? newSession(sharedIds) : null;
 }
 
 function save() {
@@ -94,6 +95,7 @@ function start(form) {
 function openPaper(session) {
   stopPlayback();
   state = session;
+  pendingShared = null;
   showingReview = false;
   fileError = '';
   setup = false;
@@ -102,6 +104,17 @@ function openPaper(session) {
   if (location.search) history.replaceState(null, '', location.pathname);
   save();
   render('currentQuestion');
+}
+
+function sharedPaperPage() {
+  return `<section class="panel paper-page"><div class="panelbody">
+    <h2 id="sharedPaperTitle" tabindex="-1">Open the shared paper?</h2>
+    <p>The shared link has a different question selection. Opening it will replace the paper and marks saved on this browser.</p>
+    <div class="actions">
+      <button type="button" class="primary" data-action="resume-saved">Keep my saved paper</button>
+      <button type="button" class="secondary" data-action="open-shared">Replace with shared paper</button>
+    </div>
+  </div></section>`;
 }
 
 function current() {
@@ -264,7 +277,7 @@ function paperPage() {
 }
 
 function render(focusId) {
-  view.innerHTML = setup ? setupPage() : showingReview ? reviewPage() : paperPage();
+  view.innerHTML = pendingShared ? sharedPaperPage() : setup ? setupPage() : showingReview ? reviewPage() : paperPage();
   updateClock();
   if (focusId) document.getElementById(focusId)?.focus();
 }
@@ -406,6 +419,16 @@ view.addEventListener('click', async event => {
   if (!button) return;
   if (button.hasAttribute('data-jump')) return jump(Number(button.dataset.jump));
   const action = button.dataset.action;
+  if (pendingShared) {
+    if (action === 'open-shared') openPaper(newSession(pendingShared));
+    if (action === 'resume-saved') {
+      pendingShared = null;
+      setup = false;
+      history.replaceState(null, '', location.pathname);
+      render('currentQuestion');
+    }
+    return;
+  }
   if (action === 'openfile') return document.getElementById('paperFile').click();
   if (!action || !state) return;
   if (action === 'savefile') return savePaperFile();
@@ -474,4 +497,4 @@ document.addEventListener('keydown', event => {
 });
 
 setInterval(updateClock, 1000);
-render();
+render(pendingShared ? 'sharedPaperTitle' : undefined);

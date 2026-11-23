@@ -22,12 +22,17 @@ function restoreAttempt(question, saved){
 let cfg, deck=[],index=0,attempts=[],setup=false,notice='',pending=null,playing=null,formDraft=null;
 let refresh=()=>{};
 export const stopPlayback=()=>{if(playing)clearInterval(playing);playing=null;};
-function save(){if(cfg)persist(prefix(cfg)+configKey(cfg),{index,attempts});}
+function save(){
+ if(!cfg)return;
+ persist(prefix(cfg)+configKey(cfg),{index,attempts});
+ persist(lastSetKey,cfg);
+}
 function load(c,position){
  const generated=generate(c),old=saved(prefix(c)+configKey(c));
- stopPlayback();cfg=c;deck=generated;attempts=deck.map((question,i)=>restoreAttempt(question,old?.attempts?.[i]));index=Math.max(0,Math.min(deck.length-1,Number.isInteger(position)?position:Number.isInteger(old?.index)?old.index:0));setup=false;pending=null;notice='';formDraft=null;persist(lastSetKey,c);save();
+ stopPlayback();cfg=c;deck=generated;attempts=deck.map((question,i)=>restoreAttempt(question,old?.attempts?.[i]));index=Math.max(0,Math.min(deck.length-1,Number.isInteger(position)?position:Number.isInteger(old?.index)?old.index:0));setup=false;pending=null;notice='';formDraft=null;
 }
 const params=new URLSearchParams(location.search);
+export const generatorRequested=params.has('gen')||params.has('generator');
 let linked=false;
 if(['1',String(VERSION)].includes(params.get('gen'))){
  const c={version:Number(params.get('gen')),subject:params.get('topic'),level:params.get('level'),count:Number(params.get('n')),seed:params.get('seed')};
@@ -36,7 +41,7 @@ if(['1',String(VERSION)].includes(params.get('gen'))){
   catch { notice='This link could not generate a practice set. Try a different seed or fewer questions.';setup=true; }
  }
 }
-if(!cfg&&!setup){
+if(generatorRequested&&!cfg&&!setup){
  const previous=saved('systems-generated-v1-last');
  const c=saved(lastSetKey) ?? (previous && {...previous,version:1});
  if(configOK(c)){
@@ -44,7 +49,6 @@ if(!cfg&&!setup){
   catch { notice='The saved practice set could not be restored. Generate a new set to continue.'; }
  }
 }
-export const hasSharedSet=linked||params.get('generator')==='1';
 
 export function openGeneratorSetup(){
  stopPlayback();
@@ -85,6 +89,7 @@ function accept(c){
   refresh();
   return;
  }
+ save();
  syncUrl();
  refresh();
  document.getElementById('genQuestion')?.focus({preventScroll:true});
@@ -129,5 +134,6 @@ export function wireGenerator(root){
  else if(k==='share'||k==='shareset'){const url=shareURL(k==='share'?index:0);try{await navigator.clipboard.writeText(url);notice='Link copied.';}catch{notice=url;}}
  else if(k==='print'||k==='answers'){printSet(k==='answers');return;}
  else return;
- save();refresh();root.querySelector('[data-gen="'+k+'"]')?.focus({preventScroll:true});});
+ if(!['setup','keep','cancelsetup','share','shareset'].includes(k))save();
+ refresh();root.querySelector('[data-gen="'+k+'"]')?.focus({preventScroll:true});});
 }

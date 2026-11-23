@@ -4,7 +4,7 @@ import {esc,figure} from './diagrams.js';
 import {guidePage,guideLink,printGuide} from './study.js?v=27ee213609';
 import {guidanceCheckbox,guidanceEnabled,saveGuidance} from './guided.js';
 import {randomSource} from './generator.js?v=cfd102bcf5';
-import {generatorView,wireGenerator,hasSharedSet,stopPlayback} from './practice-set.js?v=157c0e2896';
+import {generatorView,wireGenerator,generatorRequested,stopPlayback} from './practice-set.js?v=31aca34641';
 
 const root=document.getElementById('app');
 const key='systems-workspace-v2';
@@ -98,9 +98,10 @@ function render(){
  const p=new URLSearchParams(location.search),hash=location.hash.slice(1);
  if(hash==='paper'){location.replace('paper.html');return;}
  if(hash==='explore' && !p.has('week')){location.replace('quick.html#explore');return;}
- currentPage=hasSharedSet||p.has('gen')||p.has('generator')?'generator':['practice','guide','progress','explore'].includes(hash)?hash:'guide';
+ currentPage=generatorRequested?'generator':['practice','guide','progress','explore'].includes(hash)?hash:'guide';
  currentWeek=courses.find(c=>c.week===Number(p.get('week')))?.week??(courses.find(c=>c.week===saved.week)?.week||1);
- const c=course();saved.week=c.week;save();
+ const c=course();
+ if(currentPage!=='generator' && saved.week!==c.week){saved.week=c.week;save();}
  document.querySelectorAll('[data-nav]').forEach(el=>{
    const name=el.dataset.nav;const active=(name==='workspace'&&['practice','explore'].includes(currentPage))||(name===currentPage);
    if(active)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current');
