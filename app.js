@@ -139,7 +139,12 @@ function render() {
   clearInterval(timer);
   const tab=routes.includes(location.hash.slice(1))?location.hash.slice(1):"practice";
   document.querySelectorAll("nav a").forEach(a=>{if(a.hash==="#"+tab)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current");});
-  ({practice,paper,explore,progress})[tab]();
+  switch (tab) {
+    case "paper": paper(); break;
+    case "explore": explore(); break;
+    case "progress": progress(); break;
+    default: practice();
+  }
   if(saveFailed)main.insertAdjacentHTML("beforeend",'<p>Browser storage is unavailable. This session will last until you close or refresh the page.</p>');
 }
 window.addEventListener("hashchange",render);
