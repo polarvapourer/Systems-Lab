@@ -150,7 +150,11 @@ root.addEventListener('click',e=>{
 root.addEventListener('change',e=>{
  const t=e.target;
  if(t.hasAttribute('data-guided')){guided=t.checked;saveGuidance(guided);render();return;}
- if(t.id==='week'){location.href=pageURL(t.value,currentPage);return;}
+ if(t.id==='week'){
+   const selected=courses.find(c=>c.week===Number(t.value));
+   if(selected)location.href=pageURL(selected.week,currentPage);
+   return;
+ }
  if(t.id==='experiment'){const m=models.find(m=>m.id===t.value);saved.explore[currentWeek]={id:m.id,values:sample(m,randomSource('explore:'+m.id))};save();render();return;}
  if(t.dataset.param){if(!t.reportValidity()||t.value===''){t.reportValidity();return;}expValues(expModel())[t.dataset.param]=Number(t.value);save();render();}
 });
