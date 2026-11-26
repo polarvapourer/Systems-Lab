@@ -2,6 +2,9 @@ import {courses,models,make,sample} from './catalogue.js?v=49635bc92c';
 import {randomSource} from './generator.js?v=cfd102bcf5';
 import {esc,figure} from './diagrams.js';
 import {evaluateExpression} from './expression.js';
+
+if (window.self !== window.top) throw new Error('Open Systems-Lab in its own tab.');
+
 const root=document.querySelector('#calculator'),params=new URLSearchParams(location.search);
 let m=models.find(m=>m.id===params.get('model'));
 let mode=m?'model':'expression';

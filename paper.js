@@ -2,6 +2,8 @@
 import {questions, topics, modelDiagram, reviewTips, variationAnswers} from './paper-questions.js?v=94c4ee293e';
 import {esc} from './diagrams.js';
 
+if (window.self !== window.top) throw new Error('Open Systems-Lab in its own tab.');
+
 const view = document.getElementById('paperView');
 const printable = document.getElementById('paperPrint');
 const storageKey = 'systems-lab-written-paper-v1';
@@ -336,19 +338,26 @@ function savePaperFile() {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-async function openPaperFile(file) {
+async function openPaperFile(input) {
+  const file = input.files[0];
   if (!file) return;
+  const stillSelected = () => setup && input.isConnected && input.files[0] === file;
+  let data;
   try {
     if (file.size > 4096) throw Error();
-    const data = JSON.parse(await file.text());
-    if (!setup) return;
+    const contents = await file.text();
+    if (!stillSelected()) return;
+    data = JSON.parse(contents);
     if (data?.format !== 'systems-lab-written-paper' || data.version !== 1 || !validIds(data.questions)) throw Error();
-    openPaper(newSession(data.questions));
   } catch {
-    if (!setup) return;
+    if (!stillSelected()) return;
     fileError = 'Choose a valid Systems-Lab paper file.';
     render('setupTitle');
+    return;
   }
+  input.value = '';
+  if (state && !confirm('Replace your saved paper and marks with this file?')) return;
+  openPaper(newSession(data.questions));
 }
 
 function stopPlayback() {
@@ -385,7 +394,7 @@ view.addEventListener('submit', event => {
 
 view.addEventListener('change', event => {
   const control = event.target;
-  if (control.id === 'paperFile') return openPaperFile(control.files[0]);
+  if (control.id === 'paperFile') return openPaperFile(control);
   if (control.form?.id === 'paperForm') {
     if (control.name === 'topic') {
       control.form.elements.count.innerHTML = options(control.value === 'Mixed revision' ? [4,8,12,16] : [1,2,3,4]);
