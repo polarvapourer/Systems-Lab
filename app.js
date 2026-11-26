@@ -1,5 +1,7 @@
 "use strict";
 
+if (window.self !== window.top) throw new Error('Open Systems-Lab in its own tab.');
+
 const main = document.querySelector("main");
 const key = "systems-lab-workbook-v1";
 const byId = id => document.getElementById(id);

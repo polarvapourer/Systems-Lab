@@ -6,6 +6,8 @@ import {guidanceCheckbox,guidanceEnabled,saveGuidance} from './guided.js';
 import {randomSource} from './generator.js?v=cfd102bcf5';
 import {generatorView,wireGenerator,generatorRequested,stopPlayback} from './practice-set.js?v=31aca34641';
 
+if (window.self !== window.top) throw new Error('Open Systems-Lab in its own tab.');
+
 const root=document.getElementById('app');
 const key='systems-workspace-v2';
 const saved={week:1,positions:{},attempts:{},explore:{},completed:{}};
